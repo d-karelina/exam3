@@ -14,7 +14,6 @@ public class Message implements Serializable {
     public Message(String sender, String text) {
         this.sender = sender;
         this.text = text;
-        this.dateTime = LocalDateTime.now();
     }
 
     public String getSender() {
