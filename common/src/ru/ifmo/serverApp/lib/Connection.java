@@ -7,9 +7,9 @@ import java.net.Socket;
 
 public class Connection implements AutoCloseable{
     //интерфейс AutoCloseable позволяет создавать объект в круглых скобках try
-    private Socket socket ;
-    private ObjectInputStream input ; //объекты в байт
-    private ObjectOutputStream output ; //байты в объект
+    private final Socket socket ;
+    private final ObjectInputStream input ; //объекты в байт
+    private final ObjectOutputStream output ; //байты в объект
 
     public Connection(Socket socket) throws IOException {
         this.socket = socket ;
@@ -17,6 +17,7 @@ public class Connection implements AutoCloseable{
         output = new ObjectOutputStream(socket.getOutputStream()) ; //getOutputStream() - объект, который позволит по сокет-соединению отправлять данные из одной программы в другую
         input = new ObjectInputStream(socket.getInputStream()); //данные приходят из сокет-соединения
     }
+
 
     public void sendMessage (Message message) throws IOException {
         if (message.getDateTime() == null) message.setDateTime();

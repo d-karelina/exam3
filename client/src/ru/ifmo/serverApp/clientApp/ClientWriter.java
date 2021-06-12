@@ -8,15 +8,14 @@ import java.util.Scanner;
 
 public class ClientWriter extends Thread {
     Connection connection ;
+    Scanner scanner = new Scanner(System.in) ;
+    String userName ;
 
     public ClientWriter(Connection connection) {
         this.connection = connection ;
     }
 
     public void createAndSendMessage() {
-        System.out.println("Введите имя");
-        Scanner scanner = new Scanner(System.in) ;
-        String userName = scanner.nextLine();
         System.out.println("Введите текст сообщения");
         String messageText = scanner.nextLine();
 
@@ -31,6 +30,8 @@ public class ClientWriter extends Thread {
 
     @Override
     public void run() {
+        System.out.println("Введите имя");
+        userName = scanner.nextLine();
         while (!Thread.currentThread().isInterrupted()) {
             createAndSendMessage() ;
         }

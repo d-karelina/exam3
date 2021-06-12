@@ -14,8 +14,6 @@ import ru.ifmo.serverApp.lib.Message;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -23,7 +21,7 @@ import java.util.concurrent.*;
 // чтобы иметь доступ к свойствам внешнего класса.
 public class Server {
     private final int port ;
-    private ConcurrentHashMap<Connection, List<Message>> clients ;
+    private ConcurrentHashMap<Connection, String> clients ;
     private BlockingQueue<Message> messages = new LinkedBlockingQueue<>() ;
 
 
@@ -43,7 +41,7 @@ public class Server {
             // запускаем поток, рассылающий сообщения из очереди
             sender.start() ;
 
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 Socket newClient = serverSocket.accept() ;
                 fixedPool.execute(new ClientHandler(newClient)) ;
 
@@ -65,15 +63,21 @@ public class Server {
         @Override
         public void run() {
             try {
-                Connection connection = new Connection(clientDialog);
-                System.out.println("соединение установлено");
-                Message message = connection.readMessage() ;
-                clients.put(connection, Arrays.asList(message)) ;
-                messages.add(message) ;
-                System.out.println("всё записано");
-                notify() ;
+                Connection connection = new Connection(clientDialog) ;
+                System.out.println("соединение установлено") ;
+                while (true) {
+                    Message message = connection.readMessage() ;
+                    if (message.getText().equals("exit")) {
+                        System.out.println("до свидания") ;
+                        connection.close() ;
+                        break ;
+                    }
+                    clients.put(connection, message.getSender());
+                    messages.add(message);
+                    System.out.println("всё записано");
+                }
 
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -88,9 +92,9 @@ public class Server {
                     // берем из очереди первую запись
                     Message toSend = messages.take() ;
                     // перебираем мапу с соединениями,
-                    for (Map.Entry<Connection, List<Message>> entry: clients.entrySet()) {
+                    for (Map.Entry<Connection, String> entry: clients.entrySet()) {
                         // если запись не содержит сообщения...
-                        if (!(entry.getValue().contains(toSend)))
+                        if (!(entry.getValue().contains(toSend.getSender())))
                         {
                             try {
                                 // отправляем сообщение по соединению, которое хранится в ключе записи

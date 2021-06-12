@@ -20,8 +20,14 @@ public class ClientReader extends Thread{
             try {
                 Message fromServer = connection.readMessage() ;
                 System.out.println("от сервера: " + fromServer) ;
-            } catch (IOException | ClassNotFoundException e){
+            } catch (IOException | ClassNotFoundException e ){
                 e.printStackTrace();
+                this.interrupt() ;
+                try {
+                    connection.close() ;
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
         }
     }

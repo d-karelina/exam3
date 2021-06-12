@@ -3,7 +3,7 @@ package ru.ifmo.serverApp.clientApp;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-public class ClientApp {
+public class ClientApp2 {
     public static void main(String[] args) {
         try {
             new Client("127.0.0.1", 8999).start();

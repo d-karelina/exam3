@@ -9,30 +9,24 @@ import ru.ifmo.serverApp.lib.Connection;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client {
     protected final String ip ;
     protected final int port ;
+    private final Connection connection ;
 
-    public Client(String ip, int port) {
+    public Client(String ip, int port) throws IOException {
         this.ip = ip;
         this.port = port;
+        Socket socket = new Socket(ip, port) ;
+        connection = new Connection(socket) ;
     }
 
     public void start () {
-        try (Connection connection = new Connection(new Socket(ip, port))) {
-            Thread clientWriter = new ClientWriter(connection) ;
-            clientWriter.start();
-            // Thread clientReader = new ClientReader(connection) ;
-            // clientReader.start() ;
-        } catch (UnknownHostException e) {
-            System.out.println("Не смог соединиться..." + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Не найден класс Message" + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Thread clientWriter = new ClientWriter(connection) ;
+        clientWriter.start() ;
+        Thread clientReader = new ClientReader(connection) ;
+        clientReader.start() ;
     }
 
 }
