@@ -32,9 +32,9 @@ public class Server {
     }
 
     ExecutorService fixedPool = Executors.newFixedThreadPool(2) ;
-    Thread sender = new ServerSender() ;
 
     public void start () {
+        Thread sender = new ServerSender() ;
         try (ServerSocket serverSocket = new ServerSocket(port)){  //Ожидание клиентских подключений
             System.out.println("сервер запущен") ;
 
@@ -69,6 +69,7 @@ public class Server {
                     Message message = connection.readMessage() ;
                     if (message.getText().equals("exit")) {
                         System.out.println("до свидания") ;
+                        clients.remove(connection) ;
                         connection.close() ;
                         break ;
                     }
