@@ -101,11 +101,12 @@ public class Server {
                                 // отправляем сообщение по соединению, которое хранится в ключе записи
                                 entry.getKey().sendMessage(toSend) ;
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                clients.remove(entry.getKey()) ;
                             }
                         }
                     }
                 } catch (InterruptedException e) {
+
                     e.printStackTrace();
                 }
             }
